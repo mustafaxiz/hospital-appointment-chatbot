@@ -1,0 +1,219 @@
+{
+  "name": "Hospital-AI-Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "mode": "webhook",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -320,
+        -32
+      ],
+      "id": "1b4d561d-c3d2-4286-976a-24905deacbf9",
+      "name": "When chat message received",
+      "webhookId": "WEBHOOK_ID"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are the \"MustafaTech Health Assistant,\" a highly professional and empathetic virtual receptionist for Mustafa General Hospital. \n\nYour primary goals are:\n1. Appointment Management: Help patients book their medical appointments efficiently.\n2. Information Privacy: Maintain a professional and secure tone, ensuring patients feel their data is handled with care.\n\nOperational Guidelines:\n-If a patient wants to book an appointment:\n\n    - Respond briefly: Acknowledge the request in one short sentence.\n\n    - Information Needed: Ask for (Full Name, Email, department, and the specific Date/Time) in a concise bulleted list.\n\n    - Be Direct: Do not repeat the patient's request back to them. Get straight to the questions.\n\n- Data Integration: Once the Name, Email, and Date are gathered, immediately use the Google Sheets tool to log the appointment.\n\n- Tone and Voice: Be extremely polite, calm, and reassuring. Use medical-grade professionalism.\n\nConstraint: \n- Do not provide medical diagnoses or prescribe medications. \n- If a user describes an emergency (e.g., chest pain, severe bleeding), advise them to call emergency services or come to the ER immediately.\n- Only handle tasks related to hospital information and appointment booking."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -48,
+        -112
+      ],
+      "id": "f7d53b30-a43d-4387-80aa-b00236a32eac",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        128
+      ],
+      "id": "02359fe3-f00f-4ab4-9065-e0598ea7cbb5",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "i4muLhMNle5cdyfI",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        32,
+        128
+      ],
+      "id": "e91c4564-6c35-4450-9247-c2feaa546b8d",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "GOOGLE_SHEET_ID",
+          "mode": "list",
+          "cachedResultName": "Mustafa_Hospital",
+          "cachedResultUrl": "GOOGLE_SHEET_URL"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "الورقة1",
+          "cachedResultUrl": "GOOGLE_SHEET_URL"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Patient_Email": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Patient_Email__using_to_match_', ``, 'string') }}",
+            "Patient_Name": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Patient_Name', ``, 'string') }}",
+            "Department": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Department', ``, 'string') }}",
+            "Appointment_Date": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Appointment_Date', ``, 'string') }}"
+          },
+          "matchingColumns": [
+            "Patient_Email"
+          ],
+          "schema": [
+            {
+              "id": "Patient_Name",
+              "displayName": "Patient_Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Patient_Email",
+              "displayName": "Patient_Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Department",
+              "displayName": "Department",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Appointment_Date",
+              "displayName": "Appointment_Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        240,
+        112
+      ],
+      "id": "d9c963dc-1827-4f0c-a5e7-9b977e0aee80",
+      "name": "Append or update row in sheet in Google Sheets",
+      "credentials": {
+        "googleApi": {
+          "id": "GkhLbFnEhzJnBfuT",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "a492cc6e-21e0-4308-a607-3a5612c781ec",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1313a42085cc5f2425d365324f6d69922b8b50a6c174c34b4e9725b7c71f38ea"
+  },
+  "id": "PbyCp8XbaaVu6qxG",
+  "tags": []
+}
