@@ -1,4 +1,4 @@
-# 🏥 Automated Hospital Appointment Chatbot
+# Automated Hospital Appointment Chatbot
 
 An intelligent AI-powered system that automates hospital bookings. This project connects a **React** frontend with an automated **n8n** workflow powered by **Google Gemini**.
 
